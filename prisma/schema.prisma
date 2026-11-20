@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum PRStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum POStatus {
+  DRAFT
+  SENT
+  RECEIVED
+  PARTIAL
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  PENDING
+  VERIFIED
+  PAID
+  CANCELLED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique
+  password        String
+  role            Role       @default(STAFF)
+  department      String?
+  avatar          String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  purchaseRequests PurchaseRequest[]
+  approvals        Approval[]
+  invoicesVerified Invoice[]  @relation("VerifiedBy")
+}
+
+model Vendor {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  city        String?
+  npwp        String?
+  category    String?
+  status      Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  purchaseOrders PurchaseOrder[]
+  invoices       Invoice[]
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  code      String    @unique
+  createdAt DateTime  @default(now())
+  products  Product[]
+}
+
+model Unit {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  symbol    String    @unique
+  createdAt DateTime  @default(now())
+  products  Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  categoryId  String
+  unitId      String
+  price       Float    @default(0)
+  stock       Int      @default(0)
+  status      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category  Category  @relation(fields: [categoryId], references: [id])
+  unit      Unit      @relation(fields: [unitId], references: [id])
+  prItems   PRItem[]
+  poItems   POItem[]
+}
+
+model PurchaseRequest {
+  id          String   @id @default(cuid())
+  prNumber    String   @unique
+  title       String
+  description String?
+  status      PRStatus @default(DRAFT)
+  priority    String   @default("NORMAL")
+  department  String?
+  totalAmount Float    @default(0)
+  requesterId String
+  notes       String?
+  neededDate  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  requester     User           @relation(fields: [requesterId], references: [id])
+  items         PRItem[]
+  approvals     Approval[]
+  purchaseOrders PurchaseOrder[]
+}
+
+model PRItem {
+  id          String  @id @default(cuid())
+  prId        String
+  productId   String
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+  notes       String?
+
+  pr      PurchaseRequest @relation(fields: [prId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id])
+}
+
+model PurchaseOrder {
+  id          String   @id @default(cuid())
+  poNumber    String   @unique
+  prId        String?
+  vendorId    String
+  status      POStatus @default(DRAFT)
+  totalAmount Float    @default(0)
+  orderDate   DateTime @default(now())
+  deliveryDate DateTime?
+  deliveredDate DateTime?
+  shippingAddress String?
+  paymentTerms String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pr       PurchaseRequest? @relation(fields: [prId], references: [id])
+  vendor   Vendor           @relation(fields: [vendorId], references: [id])
+  items    POItem[]
+  invoices Invoice[]
+}
+
+model POItem {
+  id          String  @id @default(cuid())
+  poId        String
+  productId   String
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+  receivedQty Float   @default(0)
+  notes       String?
+
+  po      PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  product Product       @relation(fields: [productId], references: [id])
+}
+
+model Approval {
+  id         String         @id @default(cuid())
+  prId       String
+  approverId String
+  status     ApprovalStatus @default(PENDING)
+  level      Int            @default(1)
+  comments   String?
+  actionAt   DateTime?
+  createdAt  DateTime       @default(now())
+
+  pr       PurchaseRequest @relation(fields: [prId], references: [id], onDelete: Cascade)
+  approver User            @relation(fields: [approverId], references: [id])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  poId          String
+  vendorId      String
+  status        InvoiceStatus @default(PENDING)
+  invoiceDate   DateTime
+  dueDate       DateTime
+  totalAmount   Float
+  paidAmount    Float         @default(0)
+  paidDate      DateTime?
+  verifiedById  String?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  po          PurchaseOrder @relation(fields: [poId], references: [id])
+  vendor      Vendor        @relation(fields: [vendorId], references: [id])
+  verifiedBy  User?         @relation("VerifiedBy", fields: [verifiedById], references: [id])
+  items       InvoiceItem[]
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  description String
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
