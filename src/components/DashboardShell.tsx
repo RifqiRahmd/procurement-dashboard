@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react'
 import Sidebar from '@/components/Sidebar'
 import Navbar from '@/components/Navbar'
 import { usePathname } from 'next/navigation'
@@ -15,16 +16,20 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   '/settings': { title: 'Pengaturan', subtitle: 'Konfigurasi sistem' },
 }
 
-export default function DashboardShell({ children }: { children: React.ReactNode }) {
+function DashboardHeader() {
   const pathname = usePathname()
   const matched = Object.entries(pageTitles).find(([key]) => pathname === key || pathname.startsWith(key + '/'))
   const { title, subtitle } = matched?.[1] ?? { title: 'ProcureEase', subtitle: '' }
 
+  return <Navbar title={title} subtitle={subtitle} />
+}
+
+export default function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="app-layout">
       <Sidebar />
       <div className="main-content">
-        <Navbar title={title} subtitle={subtitle} />
+        <DashboardHeader />
         <main className="page-content">
           {children}
         </main>

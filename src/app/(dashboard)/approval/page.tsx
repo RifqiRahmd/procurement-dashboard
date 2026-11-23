@@ -3,15 +3,15 @@ import { useState } from 'react'
 import { CheckCircle, XCircle, Clock, MessageSquare, FileText } from 'lucide-react'
 
 const mockApprovals = [
-  { id: 'APR-001', prId: 'PR-2024-089', title: 'Pengadaan ATK Kantor Q4', requester: 'Budi Santoso', department: 'Finance', totalAmount: 15500000, priority: 'NORMAL', level: 1, createdAt: '2024-11-18 09:30', items: 8, status: 'PENDING' },
-  { id: 'APR-002', prId: 'PR-2024-084', title: 'Peralatan Dapur Kantin', requester: 'Linda Kusuma', department: 'GA', totalAmount: 12000000, priority: 'NORMAL', level: 1, createdAt: '2024-11-17 14:15', items: 7, status: 'PENDING' },
-  { id: 'APR-003', prId: 'PR-2024-086', title: 'Seragam Karyawan 2025', requester: 'Maya Sari', department: 'HRD', totalAmount: 48000000, priority: 'LOW', level: 2, createdAt: '2024-11-16 11:00', items: 3, status: 'PENDING' },
+  { id: 'APR-001', prId: 'PR-2026-089', title: 'Pengadaan ATK Kantor Q4', requester: 'Budi Santoso', department: 'Finance', totalAmount: 15500000, priority: 'NORMAL', level: 1, createdAt: '2026-11-18 09:30', items: 8, status: 'PENDING' },
+  { id: 'APR-002', prId: 'PR-2026-084', title: 'Peralatan Dapur Kantin', requester: 'Linda Kusuma', department: 'GA', totalAmount: 12000000, priority: 'NORMAL', level: 1, createdAt: '2026-11-17 14:15', items: 7, status: 'PENDING' },
+  { id: 'APR-003', prId: 'PR-2026-086', title: 'Seragam Karyawan 2026', requester: 'Maya Sari', department: 'HRD', totalAmount: 48000000, priority: 'LOW', level: 2, createdAt: '2026-11-16 11:00', items: 3, status: 'PENDING' },
 ]
 
 const historyApprovals = [
-  { id: 'APR-004', prId: 'PR-2024-088', title: 'Pembelian Furniture Ruang Rapat', requester: 'Siti Rahayu', totalAmount: 85000000, status: 'APPROVED', actionAt: '2024-11-17 15:30', comment: 'Disetujui, budget sesuai alokasi Q4.' },
-  { id: 'APR-005', prId: 'PR-2024-085', title: 'Perlengkapan Safety K3', requester: 'Rudi Hermawan', totalAmount: 32500000, status: 'REJECTED', actionAt: '2024-11-16 10:00', comment: 'Spesifikasi tidak sesuai standar. Mohon revisi.' },
-  { id: 'APR-006', prId: 'PR-2024-087', title: 'Server & Networking Equipment', requester: 'Andi Wijaya', totalAmount: 320000000, status: 'APPROVED', actionAt: '2024-11-15 16:45', comment: 'Approved dengan catatan: lakukan tender minimal 3 vendor.' },
+  { id: 'APR-004', prId: 'PR-2026-088', title: 'Pembelian Furniture Ruang Rapat', requester: 'Siti Rahayu', totalAmount: 85000000, status: 'APPROVED', actionAt: '2026-11-17 15:30', comment: 'Disetujui, budget sesuai alokasi Q4.' },
+  { id: 'APR-005', prId: 'PR-2026-085', title: 'Perlengkapan Safety K3', requester: 'Rudi Hermawan', totalAmount: 32500000, status: 'REJECTED', actionAt: '2026-11-16 10:00', comment: 'Spesifikasi tidak sesuai standar. Mohon revisi.' },
+  { id: 'APR-006', prId: 'PR-2026-087', title: 'Server & Networking Equipment', requester: 'Andi Wijaya', totalAmount: 320000000, status: 'APPROVED', actionAt: '2026-11-15 16:45', comment: 'Approved dengan catatan: lakukan tender minimal 3 vendor.' },
 ]
 
 function formatRp(val: number) { return 'Rp ' + val.toLocaleString('id-ID') }

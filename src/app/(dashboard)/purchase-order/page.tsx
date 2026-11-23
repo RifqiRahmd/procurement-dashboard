@@ -3,14 +3,17 @@ import { useState } from 'react'
 import { Plus, Search, Eye, Edit2, Download, ShoppingCart, FileCheck, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { formatRp } from '@/lib/format'
+import DatePicker from '@/components/DatePicker'
+import ExportDropdown from '@/components/ExportDropdown'
+import { exportToCsv, exportToXlsx } from '@/lib/exportUtils'
 
 const mockPOs = [
-  { id: 'PO-2024-052', prId: 'PR-2024-087', vendor: 'PT Maju Jaya', title: 'Komputer Server', totalAmount: 320000000, status: 'SENT', orderDate: '2024-11-16', deliveryDate: '2024-11-30', items: 12 },
-  { id: 'PO-2024-051', prId: 'PR-2024-086', vendor: 'CV Sukses Makmur', title: 'Alat Kebersihan', totalAmount: 12500000, status: 'RECEIVED', orderDate: '2024-11-14', deliveryDate: '2024-11-20', items: 6 },
-  { id: 'PO-2024-050', prId: 'PR-2024-085', vendor: 'PT Indo Supplies', title: 'Peralatan Safety', totalAmount: 32500000, status: 'DRAFT', orderDate: '2024-11-13', deliveryDate: '2024-11-28', items: 15 },
-  { id: 'PO-2024-049', prId: 'PR-2024-084', vendor: 'UD Berkah Abadi', title: 'Perlengkapan Dapur', totalAmount: 11000000, status: 'PARTIAL', orderDate: '2024-11-12', deliveryDate: '2024-11-22', items: 7 },
-  { id: 'PO-2024-048', prId: 'PR-2024-083', vendor: 'PT Global Trade', title: 'Kendaraan Operasional', totalAmount: 450000000, status: 'RECEIVED', orderDate: '2024-11-10', deliveryDate: '2024-11-20', items: 2 },
-  { id: 'PO-2024-047', prId: 'PR-2024-082', vendor: 'PT Maju Jaya', title: 'Software Lisensi', totalAmount: 95000000, status: 'SENT', orderDate: '2024-11-08', deliveryDate: '2024-11-18', items: 1 },
+  { id: 'PO-2026-052', prId: 'PR-2026-087', vendor: 'PT Maju Jaya', title: 'Komputer Server', totalAmount: 320000000, status: 'SENT', orderDate: '2026-11-16', deliveryDate: '2026-11-30', items: 12 },
+  { id: 'PO-2026-051', prId: 'PR-2026-086', vendor: 'CV Sukses Makmur', title: 'Alat Kebersihan', totalAmount: 12500000, status: 'RECEIVED', orderDate: '2026-11-14', deliveryDate: '2026-11-20', items: 6 },
+  { id: 'PO-2026-050', prId: 'PR-2026-085', vendor: 'PT Indo Supplies', title: 'Peralatan Safety', totalAmount: 32500000, status: 'DRAFT', orderDate: '2026-11-13', deliveryDate: '2026-11-28', items: 15 },
+  { id: 'PO-2026-049', prId: 'PR-2026-084', vendor: 'UD Berkah Abadi', title: 'Perlengkapan Dapur', totalAmount: 11000000, status: 'PARTIAL', orderDate: '2026-11-12', deliveryDate: '2026-11-22', items: 7 },
+  { id: 'PO-2026-048', prId: 'PR-2026-083', vendor: 'PT Global Trade', title: 'Kendaraan Operasional', totalAmount: 450000000, status: 'RECEIVED', orderDate: '2026-11-10', deliveryDate: '2026-11-20', items: 2 },
+  { id: 'PO-2026-047', prId: 'PR-2026-082', vendor: 'PT Maju Jaya', title: 'Software Lisensi', totalAmount: 95000000, status: 'SENT', orderDate: '2026-11-08', deliveryDate: '2026-11-18', items: 1 },
 ]
 
 const statusConfig: Record<string, { cls: string; label: string }> = {
@@ -26,6 +29,9 @@ const statusConfig: Record<string, { cls: string; label: string }> = {
 export default function PurchaseOrderPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
+  const [vendorFilter, setVendorFilter] = useState('ALL')
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
   const [showModal, setShowModal] = useState(false)
 
   const filtered = mockPOs.filter(po => {
@@ -33,7 +39,10 @@ export default function PurchaseOrderPage() {
       po.id.toLowerCase().includes(search.toLowerCase()) ||
       po.vendor.toLowerCase().includes(search.toLowerCase())
     const matchStatus = statusFilter === 'ALL' || po.status === statusFilter
-    return matchSearch && matchStatus
+    const matchVendor = vendorFilter === 'ALL' || po.vendor === vendorFilter
+    const matchDateFrom = !dateFrom || po.orderDate >= dateFrom
+    const matchDateTo = !dateTo || po.orderDate <= dateTo
+    return matchSearch && matchStatus && matchVendor && matchDateFrom && matchDateTo
   })
 
   const stats = {
@@ -44,6 +53,12 @@ export default function PurchaseOrderPage() {
     partial: mockPOs.filter(p => p.status === 'PARTIAL').length,
   }
 
+  const PO_HEADERS = ['No. PO', 'No. PR', 'Vendor', 'Judul', 'Total (Rp)', 'Status', 'Tgl Order', 'Tgl Pengiriman', 'Jml Item']
+  const poRows = () => filtered.map(po => [
+    po.id, po.prId, po.vendor, po.title, po.totalAmount,
+    po.status, po.orderDate, po.deliveryDate, po.items,
+  ])
+
   return (
     <div className="animate-fade-in">
       <div className="page-header">
@@ -52,7 +67,10 @@ export default function PurchaseOrderPage() {
           <p className="page-desc">Kelola pesanan pembelian ke vendor</p>
         </div>
         <div className="page-actions">
-          <button className="btn btn-secondary btn-sm"><Download size={14} /> Export</button>
+          <ExportDropdown
+            onExportCsv={() => exportToCsv('purchase-order', PO_HEADERS, poRows())}
+            onExportXlsx={() => exportToXlsx('purchase-order', PO_HEADERS, poRows())}
+          />
           <button className="btn btn-primary" onClick={() => setShowModal(true)} id="btn-new-po">
             <Plus size={15} /> Buat PO Baru
           </button>
@@ -81,7 +99,7 @@ export default function PurchaseOrderPage() {
       </div>
 
       {/* Filter */}
-      <div className="filter-bar">
+      <div className="filter-bar" style={{ flexWrap: 'wrap', gap: 10 }}>
         <div className="search-input-wrap">
           <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
           <input placeholder="Cari PO, vendor..." value={search} onChange={e => setSearch(e.target.value)} />
@@ -93,12 +111,43 @@ export default function PurchaseOrderPage() {
           <option value="RECEIVED">Diterima</option>
           <option value="PARTIAL">Sebagian</option>
         </select>
-        <select className="form-control" style={{ width: 'auto' }}>
-          <option>Semua Vendor</option>
-          <option>PT Maju Jaya</option>
-          <option>CV Sukses Makmur</option>
-          <option>PT Indo Supplies</option>
+        <select className="form-control" style={{ width: 'auto' }} value={vendorFilter} onChange={e => setVendorFilter(e.target.value)}>
+          <option value="ALL">Semua Vendor</option>
+          <option value="PT Maju Jaya">PT Maju Jaya</option>
+          <option value="CV Sukses Makmur">CV Sukses Makmur</option>
+          <option value="PT Indo Supplies">PT Indo Supplies</option>
+          <option value="UD Berkah Abadi">UD Berkah Abadi</option>
+          <option value="PT Global Trade">PT Global Trade</option>
         </select>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 150 }}>
+            <DatePicker
+              value={dateFrom}
+              onChange={setDateFrom}
+              placeholder="Dari tgl"
+              max={dateTo || undefined}
+            />
+          </div>
+          <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>s/d</span>
+          <div style={{ width: 150 }}>
+            <DatePicker
+              value={dateTo}
+              onChange={setDateTo}
+              placeholder="Sampai tgl"
+              min={dateFrom || undefined}
+            />
+          </div>
+          {(dateFrom || dateTo) && (
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => { setDateFrom(''); setDateTo('') }}
+              style={{ fontSize: 12, color: 'var(--danger)' }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
@@ -181,6 +230,8 @@ function POFormModal({ onClose }: { onClose: () => void }) {
   const [items, setItems] = useState([{ desc: '', qty: 1, price: 0 }])
   const addItem = () => setItems(p => [...p, { desc: '', qty: 1, price: 0 }])
   const total = items.reduce((s, it) => s + it.qty * it.price, 0)
+  const [tglOrder, setTglOrder] = useState('')
+  const [tglKirim, setTglKirim] = useState('')
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -211,11 +262,11 @@ function POFormModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="form-group">
               <label className="form-label">Tanggal Order</label>
-              <input type="date" className="form-control" />
+              <DatePicker value={tglOrder} onChange={setTglOrder} placeholder="Pilih tanggal order" />
             </div>
             <div className="form-group">
               <label className="form-label">Tanggal Pengiriman</label>
-              <input type="date" className="form-control" />
+              <DatePicker value={tglKirim} onChange={setTglKirim} placeholder="Pilih tanggal pengiriman" min={tglOrder || undefined} />
             </div>
             <div className="form-group">
               <label className="form-label">Syarat Pembayaran</label>

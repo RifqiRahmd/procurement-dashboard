@@ -1,19 +1,22 @@
 'use client'
 import { useState } from 'react'
-import { Plus, Search, Eye, Edit2, Trash2, FileText, Filter, Download } from 'lucide-react'
+import { Plus, Search, Eye, Edit2, Trash2, FileText, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { formatRp } from '@/lib/format'
+import DatePicker from '@/components/DatePicker'
+import ExportDropdown from '@/components/ExportDropdown'
+import { exportToCsv, exportToXlsx } from '@/lib/exportUtils'
 
 
 const mockPRs = [
-  { id: 'PR-2024-089', title: 'Pengadaan ATK Kantor Q4', requester: 'Budi Santoso', department: 'Finance', totalAmount: 15500000, status: 'PENDING', priority: 'NORMAL', createdAt: '2024-11-18', items: 8 },
-  { id: 'PR-2024-088', title: 'Pembelian Furniture Ruang Rapat', requester: 'Siti Rahayu', department: 'HRD', totalAmount: 85000000, status: 'APPROVED', priority: 'HIGH', createdAt: '2024-11-17', items: 5 },
-  { id: 'PR-2024-087', title: 'Server & Networking Equipment', requester: 'Andi Wijaya', department: 'IT', totalAmount: 320000000, status: 'APPROVED', priority: 'URGENT', createdAt: '2024-11-15', items: 12 },
-  { id: 'PR-2024-086', title: 'Seragam Karyawan 2025', requester: 'Maya Sari', department: 'HRD', totalAmount: 48000000, status: 'DRAFT', priority: 'LOW', createdAt: '2024-11-14', items: 3 },
-  { id: 'PR-2024-085', title: 'Perlengkapan Safety K3', requester: 'Rudi Hermawan', department: 'Produksi', totalAmount: 32500000, status: 'REJECTED', priority: 'HIGH', createdAt: '2024-11-12', items: 15 },
-  { id: 'PR-2024-084', title: 'Peralatan Dapur Kantin', requester: 'Linda Kusuma', department: 'GA', totalAmount: 12000000, status: 'PENDING', priority: 'NORMAL', createdAt: '2024-11-11', items: 7 },
-  { id: 'PR-2024-083', title: 'Pembelian Kendaraan Operasional', requester: 'Doni Prakoso', department: 'Logistik', totalAmount: 450000000, status: 'APPROVED', priority: 'URGENT', createdAt: '2024-11-10', items: 2 },
-  { id: 'PR-2024-082', title: 'Software Lisensi Microsoft 365', requester: 'Andi Wijaya', department: 'IT', totalAmount: 95000000, status: 'APPROVED', priority: 'NORMAL', createdAt: '2024-11-08', items: 1 },
+  { id: 'PR-2026-089', title: 'Pengadaan ATK Kantor Q4', requester: 'Budi Santoso', department: 'Finance', totalAmount: 15500000, status: 'PENDING', priority: 'NORMAL', createdAt: '2026-11-18', items: 8 },
+  { id: 'PR-2026-088', title: 'Pembelian Furniture Ruang Rapat', requester: 'Siti Rahayu', department: 'HRD', totalAmount: 85000000, status: 'APPROVED', priority: 'HIGH', createdAt: '2026-11-17', items: 5 },
+  { id: 'PR-2026-087', title: 'Server & Networking Equipment', requester: 'Andi Wijaya', department: 'IT', totalAmount: 320000000, status: 'APPROVED', priority: 'URGENT', createdAt: '2026-11-15', items: 12 },
+  { id: 'PR-2026-086', title: 'Seragam Karyawan 2026', requester: 'Maya Sari', department: 'HRD', totalAmount: 48000000, status: 'DRAFT', priority: 'LOW', createdAt: '2026-11-14', items: 3 },
+  { id: 'PR-2026-085', title: 'Perlengkapan Safety K3', requester: 'Rudi Hermawan', department: 'Produksi', totalAmount: 32500000, status: 'REJECTED', priority: 'HIGH', createdAt: '2026-11-12', items: 15 },
+  { id: 'PR-2026-084', title: 'Peralatan Dapur Kantin', requester: 'Linda Kusuma', department: 'GA', totalAmount: 12000000, status: 'PENDING', priority: 'NORMAL', createdAt: '2026-11-11', items: 7 },
+  { id: 'PR-2026-083', title: 'Pembelian Kendaraan Operasional', requester: 'Doni Prakoso', department: 'Logistik', totalAmount: 450000000, status: 'APPROVED', priority: 'URGENT', createdAt: '2026-11-10', items: 2 },
+  { id: 'PR-2026-082', title: 'Software Lisensi Microsoft 365', requester: 'Andi Wijaya', department: 'IT', totalAmount: 95000000, status: 'APPROVED', priority: 'NORMAL', createdAt: '2026-11-08', items: 1 },
 ]
 
 const statusConfig: Record<string, { cls: string; label: string }> = {
@@ -54,6 +57,12 @@ export default function PurchaseRequestPage() {
     rejected: mockPRs.filter(p => p.status === 'REJECTED').length,
   }
 
+  const PR_HEADERS = ['No. PR', 'Judul', 'Pemohon', 'Departemen', 'Total Estimasi (Rp)', 'Status', 'Prioritas', 'Dibuat']
+  const prRows = () => filtered.map(pr => [
+    pr.id, pr.title, pr.requester, pr.department, pr.totalAmount,
+    pr.status, pr.priority, pr.createdAt,
+  ])
+
   return (
     <div className="animate-fade-in">
       <div className="page-header">
@@ -62,9 +71,10 @@ export default function PurchaseRequestPage() {
           <p className="page-desc">Kelola permintaan pembelian barang dan jasa</p>
         </div>
         <div className="page-actions">
-          <button className="btn btn-secondary btn-sm">
-            <Download size={14} /> Export
-          </button>
+          <ExportDropdown
+            onExportCsv={() => exportToCsv('purchase-request', PR_HEADERS, prRows())}
+            onExportXlsx={() => exportToXlsx('purchase-request', PR_HEADERS, prRows())}
+          />
           <button className="btn btn-primary" onClick={() => setShowModal(true)} id="btn-new-pr">
             <Plus size={15} /> Buat PR Baru
           </button>
@@ -260,7 +270,7 @@ function PRFormModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="form-group">
               <label className="form-label">Tanggal Dibutuhkan</label>
-              <input type="date" className="form-control" />
+              <DatePicker placeholder="Pilih tanggal dibutuhkan" />
             </div>
             <div className="form-group" style={{ gridColumn: '1 / -1' }}>
               <label className="form-label">Deskripsi / Alasan</label>

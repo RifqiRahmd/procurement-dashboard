@@ -36,11 +36,11 @@ const topVendors = [
 ]
 
 const recentActivities = [
-  { id: 'PR-2024-089', type: 'PR', title: 'Pengadaan ATK Kantor Q4', status: 'PENDING', time: '10 menit lalu', user: 'Budi S.' },
-  { id: 'PO-2024-052', type: 'PO', title: 'PO Komputer Server', status: 'SENT', time: '1 jam lalu', user: 'Admin' },
-  { id: 'PR-2024-088', type: 'PR', title: 'Pembelian Furniture Ruang Rapat', status: 'APPROVED', time: '2 jam lalu', user: 'Siti R.' },
-  { id: 'INV-2024-031', type: 'INV', title: 'Invoice PT Maju Jaya', status: 'VERIFIED', time: '3 jam lalu', user: 'Manager' },
-  { id: 'PO-2024-051', type: 'PO', title: 'PO Alat Kebersihan', status: 'RECEIVED', time: '5 jam lalu', user: 'Admin' },
+  { id: 'PR-2026-089', type: 'PR', title: 'Pengadaan ATK Kantor Q4', status: 'PENDING', time: '10 menit lalu', user: 'Budi S.' },
+  { id: 'PO-2026-052', type: 'PO', title: 'PO Komputer Server', status: 'SENT', time: '1 jam lalu', user: 'Admin' },
+  { id: 'PR-2026-088', type: 'PR', title: 'Pembelian Furniture Ruang Rapat', status: 'APPROVED', time: '2 jam lalu', user: 'Siti R.' },
+  { id: 'INV-2026-031', type: 'INV', title: 'Invoice PT Maju Jaya', status: 'VERIFIED', time: '3 jam lalu', user: 'Manager' },
+  { id: 'PO-2026-051', type: 'PO', title: 'PO Alat Kebersihan', status: 'RECEIVED', time: '5 jam lalu', user: 'Admin' },
 ]
 
 const kpiCards = [

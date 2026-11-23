@@ -4,17 +4,17 @@ import Link from 'next/link'
 import { ArrowLeft, CheckCircle, XCircle, Clock, FileText, Edit2, Download } from 'lucide-react'
 
 const mockPRDetail = {
-  id: 'PR-2024-089',
-  title: 'Pengadaan ATK Kantor Q4 2024',
+  id: 'PR-2026-089',
+  title: 'Pengadaan ATK Kantor Q4 2026',
   requester: 'Budi Santoso',
   department: 'Finance',
   priority: 'NORMAL',
   status: 'PENDING',
-  neededDate: '2024-12-15',
-  createdAt: '2024-11-18 09:30',
-  updatedAt: '2024-11-18 11:00',
-  description: 'Pengadaan alat tulis kantor untuk kebutuhan operasional departemen Finance selama Kuartal 4 tahun 2024. Barang-barang ini dibutuhkan untuk mendukung pekerjaan sehari-hari.',
-  notes: 'Mohon diproses segera sebelum akhir November 2024.',
+  neededDate: '2026-12-15',
+  createdAt: '2026-11-18 09:30',
+  updatedAt: '2026-11-18 11:00',
+  description: 'Pengadaan alat tulis kantor untuk kebutuhan operasional departemen Finance selama Kuartal 4 tahun 2026. Barang-barang ini dibutuhkan untuk mendukung pekerjaan sehari-hari.',
+  notes: 'Mohon diproses segera sebelum akhir November 2026.',
   totalAmount: 15500000,
   items: [
     { no: 1, product: 'Kertas HVS A4 80gsm', qty: 20, unit: 'Rim', unitPrice: 65000, total: 1300000 },

@@ -1,15 +1,18 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Plus, Search, Eye, Download, Receipt, CheckCircle, Clock } from 'lucide-react'
+import { Plus, Search, Eye, Receipt, CheckCircle, Clock } from 'lucide-react'
 import { formatRp } from '@/lib/format'
+import DatePicker from '@/components/DatePicker'
+import ExportDropdown from '@/components/ExportDropdown'
+import { exportToCsv, exportToXlsx } from '@/lib/exportUtils'
 
 
 const mockInvoices = [
-  { id: 'INV-2024-031', poId: 'PO-2024-051', vendor: 'CV Sukses Makmur', invoiceDate: '2024-11-20', dueDate: '2024-12-20', totalAmount: 12500000, paidAmount: 0, status: 'PENDING' },
-  { id: 'INV-2024-030', poId: 'PO-2024-050', vendor: 'PT Indo Supplies', invoiceDate: '2024-11-18', dueDate: '2024-12-18', totalAmount: 32500000, paidAmount: 0, status: 'VERIFIED' },
-  { id: 'INV-2024-029', poId: 'PO-2024-049', vendor: 'UD Berkah Abadi', invoiceDate: '2024-11-15', dueDate: '2024-12-15', totalAmount: 11000000, paidAmount: 11000000, status: 'PAID' },
-  { id: 'INV-2024-028', poId: 'PO-2024-048', vendor: 'PT Global Trade', invoiceDate: '2024-11-12', dueDate: '2024-12-12', totalAmount: 450000000, paidAmount: 450000000, status: 'PAID' },
-  { id: 'INV-2024-027', poId: 'PO-2024-047', vendor: 'PT Maju Jaya', invoiceDate: '2024-11-10', dueDate: '2024-12-10', totalAmount: 95000000, paidAmount: 0, status: 'PENDING' },
+  { id: 'INV-2026-031', poId: 'PO-2026-051', vendor: 'CV Sukses Makmur', invoiceDate: '2026-11-20', dueDate: '2026-12-20', totalAmount: 12500000, paidAmount: 0, status: 'PENDING' },
+  { id: 'INV-2026-030', poId: 'PO-2026-050', vendor: 'PT Indo Supplies', invoiceDate: '2026-11-18', dueDate: '2026-12-18', totalAmount: 32500000, paidAmount: 0, status: 'VERIFIED' },
+  { id: 'INV-2026-029', poId: 'PO-2026-049', vendor: 'UD Berkah Abadi', invoiceDate: '2026-11-15', dueDate: '2026-12-15', totalAmount: 11000000, paidAmount: 11000000, status: 'PAID' },
+  { id: 'INV-2026-028', poId: 'PO-2026-048', vendor: 'PT Global Trade', invoiceDate: '2026-11-12', dueDate: '2026-12-12', totalAmount: 450000000, paidAmount: 450000000, status: 'PAID' },
+  { id: 'INV-2026-027', poId: 'PO-2026-047', vendor: 'PT Maju Jaya', invoiceDate: '2026-11-10', dueDate: '2026-12-10', totalAmount: 95000000, paidAmount: 0, status: 'PENDING' },
 ]
 
 const statusConfig: Record<string, { cls: string; label: string }> = {
@@ -41,6 +44,12 @@ export default function InvoicePage() {
   const totalVerified = mockInvoices.filter(i => i.status === 'VERIFIED').reduce((s, i) => s + i.totalAmount, 0)
   const totalPaid     = mockInvoices.filter(i => i.status === 'PAID').reduce((s, i) => s + i.paidAmount, 0)
 
+  const INV_HEADERS = ['No. Invoice', 'No. PO', 'Vendor', 'Tgl Invoice', 'Jatuh Tempo', 'Total Tagihan (Rp)', 'Dibayar (Rp)', 'Status']
+  const invRows = () => filtered.map(inv => [
+    inv.id, inv.poId, inv.vendor, inv.invoiceDate, inv.dueDate,
+    inv.totalAmount, inv.paidAmount, inv.status,
+  ])
+
   return (
     <div className="animate-fade-in">
       <div className="page-header">
@@ -49,7 +58,10 @@ export default function InvoicePage() {
           <p className="page-desc">Kelola tagihan dari vendor dan konfirmasi pembayaran</p>
         </div>
         <div className="page-actions">
-          <button className="btn btn-secondary btn-sm"><Download size={14} /> Export</button>
+          <ExportDropdown
+            onExportCsv={() => exportToCsv('invoice', INV_HEADERS, invRows())}
+            onExportXlsx={() => exportToXlsx('invoice', INV_HEADERS, invRows())}
+          />
           <button className="btn btn-primary" onClick={() => setShowModal(true)} id="btn-new-invoice">
             <Plus size={15} /> Input Invoice
           </button>
@@ -178,6 +190,8 @@ function InvoiceFormModal({ onClose }: { onClose: () => void }) {
   const [items, setItems] = useState([{ desc: '', qty: 1, price: 0 }])
   const addItem = () => setItems(p => [...p, { desc: '', qty: 1, price: 0 }])
   const total = items.reduce((s, it) => s + it.qty * it.price, 0)
+  const [tglInvoice, setTglInvoice] = useState('')
+  const [tglJatuhTempo, setTglJatuhTempo] = useState('')
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -202,11 +216,11 @@ function InvoiceFormModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="form-group">
               <label className="form-label">Tanggal Invoice</label>
-              <input type="date" className="form-control" />
+              <DatePicker value={tglInvoice} onChange={setTglInvoice} placeholder="Pilih tanggal invoice" />
             </div>
             <div className="form-group">
               <label className="form-label">Jatuh Tempo</label>
-              <input type="date" className="form-control" />
+              <DatePicker value={tglJatuhTempo} onChange={setTglJatuhTempo} placeholder="Pilih tanggal jatuh tempo" min={tglInvoice || undefined} />
             </div>
           </div>
           <div className="divider" />
