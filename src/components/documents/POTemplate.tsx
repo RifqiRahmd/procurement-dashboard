@@ -59,7 +59,7 @@ export const defaultCompanyConfig: POCompanyConfig = {
 
 const POTemplate = forwardRef<HTMLDivElement, POTemplateProps>(({ po, company = defaultCompanyConfig }, ref) => {
   const subtotal = po.totalAmount
-  const ppn = Math.round(subtotal * 0.11) // PPN 11%
+  const ppn = Math.round(subtotal * 0.12) // PPN 12%
   const grandTotal = subtotal + ppn
 
   return (
@@ -83,7 +83,7 @@ const POTemplate = forwardRef<HTMLDivElement, POTemplateProps>(({ po, company = 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #000', paddingBottom: 18, marginBottom: 20 }}>
         <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
           <img
-            src="/asset/logo.jpg"
+            src="/asset/azm_logo.png"
             alt="Logo"
             style={{
               width: 180,
@@ -175,13 +175,71 @@ const POTemplate = forwardRef<HTMLDivElement, POTemplateProps>(({ po, company = 
           <div style={{ fontSize: 11, fontWeight: 700, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
             Kepada
           </div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#0F0F1A' }}>{po.vendor.name}</div>
-          <div style={{ fontSize: 11, color: '#475569', marginTop: 3, lineHeight: 1.5 }}>
-            {po.vendor.address || 'Alamat vendor rekanan terdaftar'}<br />
-            {po.vendor.phone && <>Telp: {po.vendor.phone} · </>}
-            {po.vendor.email && <>Email: {po.vendor.email}</>}
-            {po.vendor.contactPerson && <><br />Up: {po.vendor.contactPerson}</>}
-          </div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#0F0F1A' }}>
+          {po.vendor.name}
+        </div>
+
+        <div style={{
+          fontSize: 11,
+          color: '#000',
+          marginTop: 3,
+          lineHeight: 1.5,
+          background: 'transparent'
+        }}>
+          {po.vendor.address || 'Alamat vendor rekanan terdaftar'}
+        </div><br />
+
+        <table style={{
+          width: '100%',
+          fontSize: 11,
+          borderCollapse: 'collapse',
+          color: '#475569',
+          marginTop: 3,
+          background: 'transparent',
+          border: 'none'
+        }}>
+          <tbody style={{ background: 'transparent' }}>
+            {[
+              ...(po.vendor.email ? [['Email', po.vendor.email]] : []),
+              ...(po.vendor.phone ? [['Telp', po.vendor.phone]] : []),
+              ['Jatuh Tempo']
+            ].map(([label, value]) => (
+              <tr key={label} style={{
+                background: 'transparent',
+                border: 'none'
+              }}>
+                <td style={{
+                  width: '30%',
+                  padding: '1px 5px 1px 0',
+                  color: '#000',
+                  background: 'transparent',
+                  border: 'none',
+                  verticalAlign: 'top'
+                }}>
+                  {label}
+                </td>
+                <td style={{
+                  padding: '1px 5px',
+                  color: '#000',
+                  background: 'transparent',
+                  border: 'none',
+                  verticalAlign: 'top'
+                }}>
+                  :
+                </td>
+                <td style={{
+                  padding: '1px 0',
+                  color: '#000',
+                  background: 'transparent',
+                  border: 'none',
+                  verticalAlign: 'top'
+                }}>
+                  {value}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         </div>
 
         {/* Shipping & Order Info */}
@@ -220,7 +278,7 @@ const POTemplate = forwardRef<HTMLDivElement, POTemplateProps>(({ po, company = 
                 <tr key={label} style={{ background: '#F8FAFC' }}>
                   <td style={{
                     padding: '2px 0',
-                    width: '42%',
+                    width: '35%',
                     background: '#F8FAFC',
                     border: 'none',
                     color: '#0F0F1A'
@@ -255,24 +313,24 @@ const POTemplate = forwardRef<HTMLDivElement, POTemplateProps>(({ po, company = 
       {/* ── TABEL ITEM PO ── */}
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20, fontSize: 12 }}>
         <thead>
-          <tr style={{ background: '#0F0F1A', color: '#FFFFFF' }}>
-            <th style={{ padding: '10px 12px', textAlign: 'center', width: 36, borderRadius: '6px 0 0 0' }}>#</th>
-            <th style={{ padding: '10px 12px', textAlign: 'left' }}>Deskripsi Barang / Jasa</th>
-            <th style={{ padding: '10px 12px', textAlign: 'center', width: 70 }}>Qty</th>
-            <th style={{ padding: '10px 12px', textAlign: 'center', width: 80 }}>Satuan</th>
-            <th style={{ padding: '10px 12px', textAlign: 'right', width: 140 }}>Harga Satuan</th>
-            <th style={{ padding: '10px 12px', textAlign: 'right', width: 150, borderRadius: '0 6px 0 0' }}>Total (Rp)</th>
+          <tr style={{ background: '#000', color: '#FFFFFF' }}>
+            <th style={{ padding: '10px 12px', textAlign: 'center', width: 36, borderRadius: '6px 0 0 0', color: '#FFF' }}>#</th>
+            <th style={{ padding: '10px 12px', textAlign: 'left', color: '#FFF' }}>Deskripsi Barang / Jasa</th>
+            <th style={{ padding: '10px 12px', textAlign: 'center', width: 70, color: '#FFF' }}>Qty</th>
+            <th style={{ padding: '10px 12px', textAlign: 'center', width: 80, color: '#FFF' }}>Satuan</th>
+            <th style={{ padding: '10px 12px', textAlign: 'right', width: 140, color: '#FFF' }}>Harga Satuan</th>
+            <th style={{ padding: '10px 12px', textAlign: 'right', width: 150, color: '#FFF', borderRadius: '0 6px 0 0' }}>Total (Rp)</th>
           </tr>
         </thead>
         <tbody>
           {po.items.map((it, idx) => (
             <tr key={it.no || idx} style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: idx % 2 === 1 ? '#FAFAFC' : '#fff' }}>
-              <td style={{ padding: '9px 12px', textAlign: 'center', color: '#64748B' }}>{it.no || idx + 1}</td>
-              <td style={{ padding: '9px 12px', fontWeight: 600, color: '#0F0F1A' }}>{it.description}</td>
-              <td style={{ padding: '9px 12px', textAlign: 'center' }}>{it.qty}</td>
-              <td style={{ padding: '9px 12px', textAlign: 'center', color: '#64748B' }}>{it.unit}</td>
-              <td style={{ padding: '9px 12px', textAlign: 'right' }}>{formatRp(it.unitPrice)}</td>
-              <td style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 700, color: '#0F0F1A' }}>{formatRp(it.total)}</td>
+              <td style={{ padding: '9px 12px', textAlign: 'center', color: '#000' }}>{it.no || idx + 1}</td>
+              <td style={{ padding: '9px 12px', fontWeight: 600, color: '#000' }}>{it.description}</td>
+              <td style={{ padding: '9px 12px', textAlign: 'center', color: '#000' }}>{it.qty}</td>
+              <td style={{ padding: '9px 12px', textAlign: 'center', color: '#000' }}>{it.unit}</td>
+              <td style={{ padding: '9px 12px', textAlign: 'right', color: '#000' }}>{formatRp(it.unitPrice)}</td>
+              <td style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 700, color: '#000' }}>{formatRp(it.total)}</td>
             </tr>
           ))}
         </tbody>
@@ -280,33 +338,41 @@ const POTemplate = forwardRef<HTMLDivElement, POTemplateProps>(({ po, company = 
 
       {/* ── SUMMARY & NOTES ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 20, marginBottom: 28 }}>
-        <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', fontSize: 11, color: '#475569' }}>
+        <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', fontSize: 11, color: '#000' }}>
           <strong style={{ color: '#0F0F1A', display: 'block', marginBottom: 4 }}>Syarat & Ketentuan PO:</strong>
-          <ol style={{ margin: 0, paddingLeft: 18, lineHeight: 1.5 }}>
-            <li>Harap cantumkan Nomor PO ini pada Surat Jalan, Invoice, dan BAST.</li>
-            <li>Barang yang dikirim harus sesuai dengan spesifikasi dan dalam kondisi baru/baik.</li>
-            <li>Faktur / Invoice wajib dilengkapi copy PO dan Bukti Penerimaan Barang yang sah.</li>
-            <li>Pembayaran ditransfer sesuai ketentuan <strong>{po.paymentTerms}</strong> setelah invoice diverifikasi.</li>
+          <img src="/asset/qr-tnc.png"
+            alt="Logo"
+            style={{
+              width: 75,
+              height: 75,
+              borderRadius: 10,
+              objectFit: 'contain'
+            }}/>
+          <div style={{ marginTop: 8, paddingTop: 6, borderTop: '1px dashed #CBD5E1' }}></div>
+          <ol style={{ margin: 0, lineHeight: 1.5, paddingTop: 5 }}>
+            <p>PPN : PT. ALDZAMA</p>
+            <p>31.259.733.9-612.000</p>
+            <p>{company.address} {company.city}</p>
           </ol>
-          {po.notes && (
+          {/* {po.notes && (
             <div style={{ marginTop: 8, paddingTop: 6, borderTop: '1px dashed #CBD5E1' }}>
               <strong>Catatan Khusus:</strong> {po.notes}
             </div>
-          )}
+          )} */}
         </div>
 
         <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 16px', background: '#FFFFFF' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6, color: '#64748B' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6, color: '#000' }}>
             <span>Subtotal:</span>
             <strong style={{ color: '#0F0F1A' }}>{formatRp(subtotal)}</strong>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 8, color: '#64748B' }}>
-            <span>PPN (11%):</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 8, color: '#000' }}>
+            <span>PPN (12%):</span>
             <strong style={{ color: '#0F0F1A' }}>{formatRp(ppn)}</strong>
           </div>
           <div style={{ borderTop: '2px solid #E2E8F0', paddingTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#0F0F1A' }}>Total Akhir:</span>
-            <span style={{ fontSize: 18, fontWeight: 900, color: '#6C63FF' }}>{formatRp(grandTotal)}</span>
+            <span style={{ fontSize: 18, fontWeight: 900, color: '#000' }}>{formatRp(grandTotal)}</span>
           </div>
         </div>
       </div>

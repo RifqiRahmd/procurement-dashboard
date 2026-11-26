@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar'
 import { usePathname } from 'next/navigation'
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
-  '/dashboard': { title: 'Dashboard', subtitle: 'Selamat datang kembali 👋' },
+  '/dashboard': { title: 'Dashboard', subtitle: 'Selamat datang kembali' },
   '/purchase-request': { title: 'Purchase Request', subtitle: 'Kelola permintaan pembelian' },
   '/purchase-order': { title: 'Purchase Order', subtitle: 'Kelola pesanan ke vendor' },
   '/approval': { title: 'Approval', subtitle: 'Proses persetujuan PR' },

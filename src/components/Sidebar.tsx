@@ -45,9 +45,16 @@ export default function Sidebar() {
     <aside className="sidebar">
       {/* Logo */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          <ShoppingCart size={18} color="white" />
-        </div>
+        <img
+            src="/asset/azm_logo.png"
+            alt="Logo"
+            style={{
+              width: 60,
+              height: 30,
+              borderRadius: 10,
+              objectFit: 'contain'
+            }}
+          />
         <div className="sidebar-logo-text">
           <span className="sidebar-logo-title">ProcureEase</span>
           <span className="sidebar-logo-sub">Procurement System</span>

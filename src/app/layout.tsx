@@ -2,9 +2,18 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/lib/theme'
 
-export const metadata: Metadata = {
-  title: 'ProcureEase — Sistem Procurement',
+export const metadata: Metadata = {  
+  title: 'ProcureEase',
   description: 'Sistem manajemen pengadaan barang dan jasa terintegrasi',
+  icons: {
+    icon: [
+      {
+        url: '/asset/azm_logo.png',
+        sizes: '20x5',
+        type: 'image/png',
+      },      
+    ],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
